@@ -1,55 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
+
 import './App.css';
+import { searchGiphs } from './features/test/testSlice';
+import { useAppDispatch } from './app/hooks';
+import { RootState } from './app/store';
+import { Card } from './components/Card';
+import { GiphyContainer } from './style';
+import { Modal } from './components/Modal';
 
 function App() {
+  const dispatch = useAppDispatch();
+  const { data, status } = useSelector((state: RootState) => state.giphyData);
+  const [searchData, setSearchData] = useState('');
+
+  const [showModal, setShowModal] = useState(false);
+
+  console.log(data);
+
   return (
     <div className="App">
+      {showModal ? <Modal data={data} /> : ''}
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
+        <input placeholder="search the giphy" onChange={(e) => setSearchData(e.target.value)} />
+        <button onClick={() => dispatch(searchGiphs(searchData))}>Search for the gyph</button>
+        <div />
+        <GiphyContainer>
+          {data.map((item: any) => (
+            <Card image={item.images?.original.url} onClick={() => setShowModal(true)} />
+          ))}
+        </GiphyContainer>
+        <span>{status}</span>
       </header>
     </div>
   );
